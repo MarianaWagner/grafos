@@ -32,51 +32,79 @@
 <body>
     <h1>Social Network Connection Manager</h1>
 
-    <div class="section">
-        <h2>Add Connection</h2>
-        <input type="text" id="addUser1" placeholder="User 1">
-        <input type="text" id="addUser2" placeholder="User 2">
-        <button onclick="addConnection()">Add Connection</button>
-    </div>
+    <hr>
+    <details>
+        <summary><strong>Add Connection</strong></summary>
+        <div class="section">
+            <!-- <h2>Add Connection</h2> -->
+            <input type="text" id="addUser1" placeholder="User 1">
+            <input type="text" id="addUser2" placeholder="User 2">
+            <button onclick="addConnection()">Add Connection</button>
+        </div>
+    </details>
 
-    <div class="section">
-        <h2>Remove Connection</h2>
-        <input type="text" id="removeUser1" placeholder="User 1">
-        <input type="text" id="removeUser2" placeholder="User 2">
-        <button onclick="removeConnection()">Remove Connection</button>
-    </div>
+    <details>
+        <summary><strong>Remove Connection</strong></summary>
+        <div class="section">
+            <!-- <h2>Remove Connection</h2> -->
+            <input type="text" id="removeUser1" placeholder="User 1">
+            <input type="text" id="removeUser2" placeholder="User 2">
+            <button onclick="removeConnection()">Remove Connection</button>
+        </div>
+    </details>
 
-    <div class="section">
-        <h2>Check Connection</h2>
-        <input type="text" id="checkUser1" placeholder="User 1">
-        <input type="text" id="checkUser2" placeholder="User 2">
-        <button onclick="checkConnection()">Check Connection</button>
-    </div>
+    <details>
+        <summary><strong>Check Connection</strong></summary>
+        <div class="section">
+            <!-- <h2>Check Connection</h2> -->
+            <input type="text" id="checkUser1" placeholder="User 1">
+            <input type="text" id="checkUser2" placeholder="User 2">
+            <button onclick="checkConnection()">Check Connection</button>
+        </div>
+    </details>
+    
+    <details>
+        <summary><strong>List Connection</strong></summary>
+        <div class="section">
+            <!-- <h2>List Connections</h2> -->
+            <input type="text" id="listUser" placeholder="User">
+            <button onclick="listConnections()">List Connections</button>
+        </div>
+    </details>
 
-    <div class="section">
-        <h2>List Connections</h2>
-        <input type="text" id="listUser" placeholder="User">
-        <button onclick="listConnections()">List Connections</button>
-    </div>
+    <details>
+        <summary><strong>Find Mutual Connection</strong></summary>
+        <div class="section">
+            <!-- <h2>Find Mutual Connections</h2> -->
+            <input type="text" id="mutualUser1" placeholder="User 1">
+            <input type="text" id="mutualUser2" placeholder="User 2">
+            <button onclick="findMutualConnections()">Find Mutual Connections</button>
+        </div>
+    </details>
 
-    <div class="section">
-        <h2>Find Mutual Connections</h2>
-        <input type="text" id="mutualUser1" placeholder="User 1">
-        <input type="text" id="mutualUser2" placeholder="User 2">
-        <button onclick="findMutualConnections()">Find Mutual Connections</button>
-    </div>
+    <details>
+        <summary><strong>Get Connection Degree</strong></summary>
+        <div class="section">
+            <!-- <h2>Get Connection Degree</h2> -->
+            <input type="text" id="degreeUser" placeholder="User">
+            <button onclick="getConnectionDegree()">Get Connection Degree</button>
+        </div>
+    </details>
 
-    <div class="section">
-        <h2>Get Connection Degree</h2>
-        <input type="text" id="degreeUser" placeholder="User">
-        <button onclick="getConnectionDegree()">Get Connection Degree</button>
-    </div>
-
+    <hr>
+    <h2>Result</h2>
     <div id="result"></div>
+
+    <hr>
+    <details>
+        <summary><strong>History</strong></summary>
+        <div id="history"></div>
+    </details> 
 
     <script>
         const API_URL = 'http://localhost:5000';
         const resultDiv = document.getElementById('result');
+        const historyDiv = document.getElementById('history');
 
         async function makeRequest(endpoint, data) {
             try {
@@ -90,6 +118,7 @@
                 return await response.json();
             } catch (error) {
                 resultDiv.innerHTML = `Error: ${error.message}`;
+                historyDiv.innerHTML += `Error: ${error.message}`;
             }
         }
 
@@ -98,6 +127,7 @@
             const user2 = document.getElementById('addUser2').value;
             const result = await makeRequest('add_connection', { user1, user2 });
             resultDiv.innerHTML = result.message || result.error;
+            historyDiv.innerHTML += (result.message || result.error) + '<br>';
         }
 
         async function removeConnection() {
@@ -105,6 +135,7 @@
             const user2 = document.getElementById('removeUser2').value;
             const result = await makeRequest('remove_connection', { user1, user2 });
             resultDiv.innerHTML = result.message || result.error;
+            historyDiv.innerHTML += (result.message || result.error) + '<br>';
         }
 
         async function checkConnection() {
@@ -112,12 +143,14 @@
             const user2 = document.getElementById('checkUser2').value;
             const result = await makeRequest('is_connected', { user1, user2 });
             resultDiv.innerHTML = `Connected: ${result.connected}`;
+            historyDiv.innerHTML += `Connected: ${result.connected} <br>`;
         }
 
         async function listConnections() {
             const user = document.getElementById('listUser').value;
             const result = await makeRequest('list_connections', { user });
             resultDiv.innerHTML = `Connections: ${result.connections.join(', ')}`;
+            historyDiv.innerHTML += `Connections: ${result.connections.join(', ')} <br>`;
         }
 
         async function findMutualConnections() {
@@ -125,12 +158,14 @@
             const user2 = document.getElementById('mutualUser2').value;
             const result = await makeRequest('mutual_connections', { user1, user2 });
             resultDiv.innerHTML = `Mutual Connections: ${result.mutual_connections.join(', ')}`;
+            historyDiv.innerHTML += `Mutual Connections: ${result.mutual_connections.join(', ')} <br>`;
         }
 
         async function getConnectionDegree() {
             const user = document.getElementById('degreeUser').value;
             const result = await makeRequest('connection_degree', { user });
             resultDiv.innerHTML = `Connection Degree: ${result.connection_degree}`;
+            historyDiv.innerHTML += `Connection Degree: ${result.connection_degree} <br>`;
         }
     </script>
 </body>
