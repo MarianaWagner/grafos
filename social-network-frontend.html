@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Social Network Connection Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section {
+            background-color: #f4f4f4;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        input, button {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Social Network Connection Manager</h1>
+
+    <div class="section">
+        <h2>Add Connection</h2>
+        <input type="text" id="addUser1" placeholder="User 1">
+        <input type="text" id="addUser2" placeholder="User 2">
+        <button onclick="addConnection()">Add Connection</button>
+    </div>
+
+    <div class="section">
+        <h2>Remove Connection</h2>
+        <input type="text" id="removeUser1" placeholder="User 1">
+        <input type="text" id="removeUser2" placeholder="User 2">
+        <button onclick="removeConnection()">Remove Connection</button>
+    </div>
+
+    <div class="section">
+        <h2>Check Connection</h2>
+        <input type="text" id="checkUser1" placeholder="User 1">
+        <input type="text" id="checkUser2" placeholder="User 2">
+        <button onclick="checkConnection()">Check Connection</button>
+    </div>
+
+    <div class="section">
+        <h2>List Connections</h2>
+        <input type="text" id="listUser" placeholder="User">
+        <button onclick="listConnections()">List Connections</button>
+    </div>
+
+    <div class="section">
+        <h2>Find Mutual Connections</h2>
+        <input type="text" id="mutualUser1" placeholder="User 1">
+        <input type="text" id="mutualUser2" placeholder="User 2">
+        <button onclick="findMutualConnections()">Find Mutual Connections</button>
+    </div>
+
+    <div class="section">
+        <h2>Get Connection Degree</h2>
+        <input type="text" id="degreeUser" placeholder="User">
+        <button onclick="getConnectionDegree()">Get Connection Degree</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        const resultDiv = document.getElementById('result');
+
+        async function makeRequest(endpoint, data) {
+            try {
+                const response = await fetch(`${API_URL}/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                return await response.json();
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function addConnection() {
+            const user1 = document.getElementById('addUser1').value;
+            const user2 = document.getElementById('addUser2').value;
+            const result = await makeRequest('add_connection', { user1, user2 });
+            resultDiv.innerHTML = result.message || result.error;
+        }
+
+        async function removeConnection() {
+            const user1 = document.getElementById('removeUser1').value;
+            const user2 = document.getElementById('removeUser2').value;
+            const result = await makeRequest('remove_connection', { user1, user2 });
+            resultDiv.innerHTML = result.message || result.error;
+        }
+
+        async function checkConnection() {
+            const user1 = document.getElementById('checkUser1').value;
+            const user2 = document.getElementById('checkUser2').value;
+            const result = await makeRequest('is_connected', { user1, user2 });
+            resultDiv.innerHTML = `Connected: ${result.connected}`;
+        }
+
+        async function listConnections() {
+            const user = document.getElementById('listUser').value;
+            const result = await makeRequest('list_connections', { user });
+            resultDiv.innerHTML = `Connections: ${result.connections.join(', ')}`;
+        }
+
+        async function findMutualConnections() {
+            const user1 = document.getElementById('mutualUser1').value;
+            const user2 = document.getElementById('mutualUser2').value;
+            const result = await makeRequest('mutual_connections', { user1, user2 });
+            resultDiv.innerHTML = `Mutual Connections: ${result.mutual_connections.join(', ')}`;
+        }
+
+        async function getConnectionDegree() {
+            const user = document.getElementById('degreeUser').value;
+            const result = await makeRequest('connection_degree', { user });
+            resultDiv.innerHTML = `Connection Degree: ${result.connection_degree}`;
+        }
+    </script>
+</body>
+</html>
